@@ -25,9 +25,9 @@ namespace Parser.Controllers
 
         [HttpGet]
         [Route("title/{url}")]
-        public string GetTitle(string url)
+        public JsonResult GetTitle(string url)
         {
-            return _parser.getSiteTitle(url);
+            return new JsonResult(_parser.getSiteTitle(url));
         }
     }
 }

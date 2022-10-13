@@ -10,6 +10,7 @@ namespace Parser.Infrastructure
         {
             using (WebClient wc = new WebClient())
             {
+                wc.Headers.Add("User-Agent: Other");
                 return wc.DownloadString("https://" + url);
             }
         }
