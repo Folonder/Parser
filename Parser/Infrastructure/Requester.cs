@@ -31,7 +31,7 @@ namespace Parser.Infrastructure
             return await getPageAsync(url);
         }
 
-        public async Task<string> getPageAsync(string url)
+        private async Task<string> getPageAsync(string url)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Parser.Infrastructure
             }
         }
 
-        public async Task<string> solveRedirectionLoopAsync(string url)
+        private async Task<string> solveRedirectionLoopAsync(string url)
         {
             string source = "can't solve redirection loop";
             HttpClient client = new HttpClient();
