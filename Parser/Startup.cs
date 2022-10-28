@@ -27,8 +27,7 @@ namespace Parser
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataProvider, Requester>();
-            services.AddScoped<IParser, HTMLParser>();
+            services.injectDependencies();
             services.AddControllers();
             services.AddSwaggerGen();
         }
@@ -57,6 +56,7 @@ namespace Parser
 
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUI();
+
         }
     }
 }

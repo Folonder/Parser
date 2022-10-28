@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using System.Reflection;
-using System.IO;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Parser.Services;
 
 namespace Parser.Controllers
@@ -24,10 +18,10 @@ namespace Parser.Controllers
         }
 
         [HttpGet]
-        [Route("title/{url}")]
-        public JsonResult GetTitle(string url)
+        [Route("title")]
+        public JsonResult GetTitle([FromQuery(Name = "url")] string url)
         {
-            return new JsonResult(_parser.getSiteTitle(url));
+            return new JsonResult(_parser.getSiteTitleAsync(url).Result);
         }
     }
 }

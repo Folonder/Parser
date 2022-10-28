@@ -1,7 +1,9 @@
-﻿namespace Parser.Infrastructure
+﻿using System.Threading.Tasks;
+
+namespace Parser.Infrastructure
 {
-    public interface IDataProvider
+    public interface IDataProviderAsync
     {
-        public string getPageHTML(string URL);
+        Task<string> getPageHTMLAsync(string url);
     }
 }

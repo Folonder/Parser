@@ -1,7 +1,9 @@
-﻿namespace Parser.Services
+﻿using System.Threading.Tasks;
+
+namespace Parser.Services
 {
     public interface IParser
     {
-        public string getSiteTitle(string URL);
+        public Task<string> getSiteTitleAsync(string URL);
     }
 }
