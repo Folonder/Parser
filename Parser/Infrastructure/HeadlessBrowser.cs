@@ -6,7 +6,7 @@ namespace Parser.Infrastructure
 {
     public class HeadlessBrowser : IDataProviderAsync
     {
-        public async Task<string> getPageHTMLAsync(string url)
+        public async Task<string> GetPageHtmlAsync(string url)
         {
             await new BrowserFetcher().DownloadAsync();
             Browser browser = (Browser)await Puppeteer.LaunchAsync(new LaunchOptions{Headless = true});

@@ -21,7 +21,7 @@ namespace Parser.Controllers
         [Route("title")]
         public JsonResult GetTitle([FromQuery(Name = "url")] string url)
         {
-            return new JsonResult(_parser.getSiteTitleAsync(url).Result);
+            return new JsonResult(_parser.GetSiteTitleAsync(url).Result);
         }
     }
 }

@@ -1,21 +1,19 @@
 ﻿using Parser.Infrastructure;
-using System;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Parser.Services
 {
-    public class HTMLParser : IParser
+    public class HtmlParser : IParser
     {
         private readonly IDataProviderAsync _provider;
-        public HTMLParser(IDataProviderAsync provider)
+        public HtmlParser(IDataProviderAsync provider)
         {
             _provider = provider;
         }
-        public async Task<string> getSiteTitleAsync(string url)
+        public async Task<string> GetSiteTitleAsync(string url)
         {
-            string htmlCode = await _provider.getPageHTMLAsync(url);
+            string htmlCode = await _provider.GetPageHtmlAsync(url);
             string title = Regex.Match(htmlCode, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
                 RegexOptions.IgnoreCase).Groups["Title"].Value;
             if (string.IsNullOrEmpty(title))

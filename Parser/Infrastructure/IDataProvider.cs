@@ -4,6 +4,6 @@ namespace Parser.Infrastructure
 {
     public interface IDataProviderAsync
     {
-        Task<string> getPageHTMLAsync(string url);
+        Task<string> GetPageHtmlAsync(string url);
     }
 }

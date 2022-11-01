@@ -4,6 +4,6 @@ namespace Parser.Services
 {
     public interface IParser
     {
-        public Task<string> getSiteTitleAsync(string URL);
+        public Task<string> GetSiteTitleAsync(string url);
     }
 }
