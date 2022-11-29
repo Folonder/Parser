@@ -4,14 +4,14 @@ using Parser.Services;
 
 namespace Parser.Controllers
 {
-    [ApiController]
-    public class TitleParserController: ControllerBase
+    [Route("api/[controller]")]
+    public class HtmlParserController: ControllerBase
     {
-        private readonly ILogger<TitleParserController> _logger;
+        private readonly ILogger<HtmlParserController> _logger;
 
         private readonly IParser _parser;
 
-        public TitleParserController(ILogger<TitleParserController> logger, IParser parser)
+        public HtmlParserController(ILogger<HtmlParserController> logger, IParser parser)
         {
             _logger = logger;
             _parser = parser;
