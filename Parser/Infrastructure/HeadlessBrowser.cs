@@ -4,8 +4,10 @@ using PuppeteerSharp;
 
 namespace Parser.Infrastructure
 {
-    public class HeadlessBrowser : IDataProviderAsync
+    public class HeadlessBrowser : IHtmlProvider
     {
+        public string Domain { get; } = "https://";
+        
         public async Task<string> GetPageHtmlAsync(string url)
         {
             await new BrowserFetcher().DownloadAsync();
@@ -15,5 +17,6 @@ namespace Parser.Infrastructure
             await page.GoToAsync(url, WaitUntilNavigation.Networkidle2);
             return await page.GetContentAsync();
         }
+
     }
 }

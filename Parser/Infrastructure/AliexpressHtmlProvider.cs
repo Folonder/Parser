@@ -5,23 +5,12 @@ using System.Threading.Tasks;
 
 namespace Parser.Infrastructure
 {
-    public class Requester : IDataProviderAsync
+    public class AliexpressHtmlProvider : IHtmlProvider
     {
-        private int _maxRedirectionDeep = 10;
 
-        public int MaxRedirectionDeep
-        {
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException("The argument must be greater than 0");
-                }
-
-                _maxRedirectionDeep = value;
-            }
-            get => _maxRedirectionDeep;
-        }
+        public string Domain { get; } = "https://aliexpress.ru";
+        
+        private uint _maxRedirectionDeep = 10;
 
         public string UserAgent { get; set; } =
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

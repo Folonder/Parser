@@ -8,8 +8,9 @@ namespace Parser
     {
         public static void InjectDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IDataProviderAsync, Requester>();
-            services.AddScoped<IParser, HtmlParser>();
+            services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
+            services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
+            services.AddScoped<IParserService, HtmlParserService>();
         }
     }
 }

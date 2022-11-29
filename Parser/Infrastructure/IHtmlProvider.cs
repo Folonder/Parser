@@ -2,8 +2,10 @@
 
 namespace Parser.Infrastructure
 {
-    public interface IDataProviderAsync
+    public interface IHtmlProvider
     {
         Task<string> GetPageHtmlAsync(string url);
+        
+        string Domain { get; }
     }
 }
