@@ -2,7 +2,7 @@
 
 namespace Parser.Services
 {
-    public interface IParserService
+    public interface IHtmlParserService
     {
         public Task<string> GetSiteTitleAsync(string url);
     }

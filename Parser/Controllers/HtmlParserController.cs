@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Parser.Services;
 
@@ -9,19 +10,19 @@ namespace Parser.Controllers
     {
         private readonly ILogger<HtmlParserController> _logger;
 
-        private readonly IParserService _parserService;
+        private readonly IHtmlParserService _htmlParserService;
 
-        public HtmlParserController(ILogger<HtmlParserController> logger, IParserService parserService)
+        public HtmlParserController(ILogger<HtmlParserController> logger, IHtmlParserService htmlParserService)
         {
             _logger = logger;
-            _parserService = parserService;
+            _htmlParserService = htmlParserService;
         }
 
         [HttpGet]
         [Route("title")]
-        public IActionResult GetTitle([FromQuery(Name = "url")] string url)
+        public async Task<IActionResult> GetTitle([FromQuery(Name = "url")] string url)
         {
-            return Ok(_parserService.GetSiteTitleAsync(url).Result);
+            return Ok(await _htmlParserService.GetSiteTitleAsync(url));
         }
     }
 }

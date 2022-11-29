@@ -10,7 +10,7 @@ namespace Parser
         {
             services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
             services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
-            services.AddScoped<IParserService, HtmlParserService>();
+            services.AddScoped<IHtmlParserService, HtmlHtmlParserService>();
         }
     }
 }

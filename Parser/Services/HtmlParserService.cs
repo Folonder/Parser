@@ -2,25 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
 using Parser.Infrastructure;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Parser.Services
 {
-    public class HtmlParserService : IParserService
+    public class HtmlHtmlParserService : IHtmlParserService
     {
         private readonly IEnumerable<IHtmlProvider> _providers;
-        public HtmlParserService(IEnumerable<IHtmlProvider> providers)
+        public HtmlHtmlParserService(IEnumerable<IHtmlProvider> providers)
         {
             _providers = providers;
         }
         public async Task<string> GetSiteTitleAsync(string url)
         {
-            var provider = FindImplementation(url);
-            string htmlCode = await provider.GetPageHtmlAsync(url);
-            string title = Regex.Match(htmlCode, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
-                RegexOptions.IgnoreCase).Groups["Title"].Value;
+            var provider = await FindImplementation(url);
+            string title = await GetTitle(await provider.GetPageHtmlAsync(url));
             if (string.IsNullOrEmpty(title))
             {
                 return "Can't find title of the page";
@@ -29,13 +28,20 @@ namespace Parser.Services
 
         }
 
-        private IHtmlProvider FindImplementation(string url)
+        private Task<string> GetTitle(string html)
+        {
+            return Task.FromResult(Regex.Match(html, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
+                RegexOptions.IgnoreCase).Groups["Title"].Value);
+        }
+        
+        
+        private Task<IHtmlProvider> FindImplementation(string url)
         {
             foreach (var provider in _providers)
             {
                 if (url.Contains(provider.Domain))
                 {
-                    return provider;
+                    return Task.FromResult(provider);
                 }
             }
 
