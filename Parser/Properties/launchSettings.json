@@ -11,7 +11,7 @@
     "Parser": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/HtmlParser/title/?url=google.com",
+      "launchUrl": "api/HtmlParser/title/?url=https://google.com",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

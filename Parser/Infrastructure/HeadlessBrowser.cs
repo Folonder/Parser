@@ -1,6 +1,5 @@
 ﻿using PuppeteerSharp;
 using System.Threading.Tasks;
-using PuppeteerSharp;
 
 namespace Parser.Infrastructure
 {

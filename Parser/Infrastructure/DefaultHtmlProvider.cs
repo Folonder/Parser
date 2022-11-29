@@ -1,29 +1,35 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace Parser.Infrastructure
 {
     public class DefaultHtmlProvider : IHtmlProvider
     {
-        public string Domain { get; } = "https://";
+        public string Domain { get; }
 
-        public string UserAgent { get; set; } =
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
-
+        private string _userAgent;
+        
+        public DefaultHtmlProvider(IOptions<DefaultHtmlProviderOptions> options)
+        {
+            var _options = options.Value;
+            _userAgent = _options.UserAgent;
+            Domain = _options.Domain;
+        }
+        
         public async Task<string> GetPageHtmlAsync(string url)
         {
             try
             {
                 var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
                 var response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
-                    return await client.GetStringAsync(url);
+                    return await response.Content.ReadAsStringAsync();
                 }
-
-                return await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException();
             }
             catch (Exception ex)
             {

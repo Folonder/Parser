@@ -1,35 +1,37 @@
 ﻿using System.Net.Http;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 
 namespace Parser.Infrastructure
 {
     public class AliexpressHtmlProvider : IHtmlProvider
     {
+        public string Domain { get; }
 
-        public string Domain { get; } = "https://aliexpress.ru";
+        private uint _maxRedirectionDeep;
+
+        private string _userAgent;
         
-        private uint _maxRedirectionDeep = 10;
-
-        public string UserAgent { get; set; } =
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
-
-        public async Task<string> GetPageHtmlAsync(string url)
+        public AliexpressHtmlProvider(IOptions<AliexpressHtmlProviderOptions> options)
         {
-            return await GetPageAsync(url);
+            var _options = options.Value;
+            _maxRedirectionDeep = _options.MaxRedirectionDeep;
+            _userAgent = _options.UserAgent;
+            Domain = _options.Domain;
         }
-
-        private async Task<string> GetPageAsync(string url)
+        
+        public  async Task<string> GetPageHtmlAsync(string url)
         {
             try
             {
                 var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
                 var response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
-                    return await client.GetStringAsync(url);
+                    return await response.Content.ReadAsStringAsync();
                 }
 
                 if ((int)response.StatusCode == 302)
@@ -50,22 +52,24 @@ namespace Parser.Infrastructure
             string source = "can't solve redirection loop";
             HttpClient client = new HttpClient();
 
+            string newUrl = url;
+            
             for (int i = 0; i < _maxRedirectionDeep; i++)
             {
                 // некторые сайты не уходят в цикл перенаправления, когда подключаешься к первой ссылки перенаправления, при этом нужно создать новый клиент
                 if (i < 2)
                 {
                     client = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false });
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
                 }
 
-                var response = await client.GetAsync(url);
+                var response = await client.GetAsync(newUrl);
                 if (response.Headers.Location == null)
                 {
-                    return await client.GetStringAsync(url);
+                    return await response.Content.ReadAsStringAsync();
                 }
 
-                url = response.Headers.Location.ToString();
+                newUrl = response.Headers.Location.ToString();
             }
 
             return source;
