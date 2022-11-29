@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Parser.Infrastructure;
+using Parser.Services;
 
 namespace Parser
 {
@@ -18,11 +19,15 @@ namespace Parser
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.InjectDependencies();
-            services.AddControllers();
-            services.AddSwaggerGen();
+            services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
+            services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
+            services.AddScoped<IHtmlParserService, HtmlHtmlParserService>();
+            
             services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));
             services.Configure<AliexpressHtmlProviderOptions>(Configuration.GetSection(AliexpressHtmlProviderOptions.Key));
+            
+            services.AddControllers();
+            services.AddSwaggerGen();
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
