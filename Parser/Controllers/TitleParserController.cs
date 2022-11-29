@@ -5,7 +5,7 @@ using Parser.Services;
 namespace Parser.Controllers
 {
     [ApiController]
-    public class TitleParserController
+    public class TitleParserController: ControllerBase
     {
         private readonly ILogger<TitleParserController> _logger;
 
@@ -19,9 +19,9 @@ namespace Parser.Controllers
 
         [HttpGet]
         [Route("title")]
-        public JsonResult GetTitle([FromQuery(Name = "url")] string url)
+        public IActionResult GetTitle([FromQuery(Name = "url")] string url)
         {
-            return new JsonResult(_parser.GetSiteTitleAsync(url).Result);
+            return Ok(_parser.GetSiteTitleAsync(url).Result);
         }
     }
 }
