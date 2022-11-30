@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Remove="Infrastructure\IExceptionHandler.cs" />
     <Compile Remove="StartupConfiguration.cs" />
+    <Compile Remove="Infrastructure\HeadlessBrowser.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,8 +19,10 @@ namespace Parser
         
         public void ConfigureServices(IServiceCollection services)
         {
+            //  DefaultHtmlProvider must be the last 
             services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
             services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
+            
             services.AddScoped<IHtmlParserService, HtmlHtmlParserService>();
             
             services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));

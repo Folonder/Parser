@@ -1,5 +1,4 @@
 ﻿using System.Net.Http;
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
@@ -24,39 +23,31 @@ namespace Parser.Infrastructure
         
         public  async Task<string> GetPageHtmlAsync(string url)
         {
-            try
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
             {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
-                var response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-
-                if ((int)response.StatusCode == 302)
-                {
-                    return await SolveRedirectionLoopAsync(url);
-                }
-
                 return await response.Content.ReadAsStringAsync();
             }
-            catch (Exception ex)
+
+            if ((int)response.StatusCode == 302)
             {
-                return ex.Message;
+                return await SolveRedirectionLoopAsync(url);
             }
+
+            throw new HttpRequestException();
         }
 
         private async Task<string> SolveRedirectionLoopAsync(string url)
         {
-            string source = "can't solve redirection loop";
             HttpClient client = new HttpClient();
-
             string newUrl = url;
             
             for (int i = 0; i < _maxRedirectionDeep; i++)
             {
-                // некторые сайты не уходят в цикл перенаправления, когда подключаешься к первой ссылки перенаправления, при этом нужно создать новый клиент
+                // некторые сайты не уходят в цикл перенаправления, когда подключаешься к первой ссылки перенаправления,
+                // при этом нужно создать новый клиент
                 if (i < 2)
                 {
                     client = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false });
@@ -72,7 +63,7 @@ namespace Parser.Infrastructure
                 newUrl = response.Headers.Location.ToString();
             }
 
-            return source;
+            throw new HttpRequestException();
         }
     }
 }

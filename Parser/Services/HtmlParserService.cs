@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Parser.Infrastructure;
 using System.Text.RegularExpressions;
@@ -18,21 +19,21 @@ namespace Parser.Services
         public async Task<string> GetSiteTitleAsync(string url)
         {
             var provider = await FindImplementation(url);
+            
             string title = await GetTitle(await provider.GetPageHtmlAsync(url));
             if (string.IsNullOrEmpty(title))
             {
-                return "Can't find title of the page";
+                throw new ArgumentException();
             }
             return title;
         }
 
-        private Task<string> GetTitle(string html)
+        private async Task<string> GetTitle(string html)
         {
-            return Task.FromResult(Regex.Match(html, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
-                RegexOptions.IgnoreCase).Groups["Title"].Value);
+            return Regex.Match(html, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
+                RegexOptions.IgnoreCase).Groups["Title"].Value;
         }
-        
-        
+
         private Task<IHtmlProvider> FindImplementation(string url)
         {
             foreach (var provider in _providers)

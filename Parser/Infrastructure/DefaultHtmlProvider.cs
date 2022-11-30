@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
@@ -20,21 +19,14 @@ namespace Parser.Infrastructure
         
         public async Task<string> GetPageHtmlAsync(string url)
         {
-            try
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
+            var response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
             {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
-                var response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-                throw new HttpRequestException();
+                return await response.Content.ReadAsStringAsync();
             }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+            throw new HttpRequestException();
         }
     }
 }

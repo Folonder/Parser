@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Parser.Services;
@@ -22,7 +24,18 @@ namespace Parser.Controllers
         [Route("title")]
         public async Task<IActionResult> GetTitle([FromQuery(Name = "url")] string url)
         {
-            return Ok(await _htmlParserService.GetSiteTitleAsync(url));
+            try
+            {
+                return Ok(await _htmlParserService.GetSiteTitleAsync(url));
+            }
+            catch (HttpRequestException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return NoContent();
+            }
         }
     }
 }
