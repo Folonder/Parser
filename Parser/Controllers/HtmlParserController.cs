@@ -24,16 +24,21 @@ namespace Parser.Controllers
         [Route("title")]
         public async Task<IActionResult> GetTitle([FromQuery(Name = "url")] string url)
         {
+            _logger.LogInformation("Requested url: {url}", url);
             try
             {
-                return Ok(await _htmlParserService.GetSiteTitleAsync(url));
+                var title = await _htmlParserService.GetSiteTitleAsync(url);
+                _logger.LogInformation("Success response, title: {title}", title);
+                return Ok(title);
             }
             catch (HttpRequestException ex)
-            {
+            {  
+                _logger.LogInformation("Can't connect to the server");
                 return NotFound(ex.Message);
             }
             catch (ArgumentException ex)
             {
+                _logger.LogInformation("No title on the page");
                 return NoContent();
             }
         }

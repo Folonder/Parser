@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Parser.Services
 {
-    public class HtmlHtmlParserService : IHtmlParserService
+    public class HtmlParserService : IHtmlParserService
     {
+
         private readonly IEnumerable<IHtmlProvider> _providers;
         
-        public HtmlHtmlParserService(IEnumerable<IHtmlProvider> providers)
+        public HtmlParserService(IEnumerable<IHtmlProvider> providers)
         {
             _providers = providers;
         }
@@ -44,7 +45,7 @@ namespace Parser.Services
                 }
             }
 
-            throw new VersionNotFoundException();
+            throw new VersionNotFoundException("No implementation to the url");
         }
     }
 }

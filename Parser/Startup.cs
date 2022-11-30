@@ -23,7 +23,7 @@ namespace Parser
             services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
             services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
             
-            services.AddScoped<IHtmlParserService, HtmlHtmlParserService>();
+            services.AddScoped<IHtmlParserService, HtmlParserService>();
             
             services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));
             services.Configure<AliexpressHtmlProviderOptions>(Configuration.GetSection(AliexpressHtmlProviderOptions.Key));
