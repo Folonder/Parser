@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
 
 namespace Parser.Infrastructure
 {
@@ -8,25 +9,25 @@ namespace Parser.Infrastructure
     {
         public string Domain { get; }
 
-        private string _userAgent;
-        
-        public DefaultHtmlProvider(IOptions<DefaultHtmlProviderOptions> options)
+        private readonly HttpClientFactory _clientFactory;
+
+        public DefaultHtmlProvider(HttpClientFactory clientFactory,
+            IOptions<DefaultHtmlProviderOptions> options)
         {
-            var _options = options.Value;
-            _userAgent = _options.UserAgent;
-            Domain = _options.Domain;
+            _clientFactory = clientFactory;
+            Domain = options.Value.Domain;
         }
         
         public async Task<string> GetPageHtmlAsync(string url)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            using (var response = await _clientFactory.CreateClient().GetAsync(url))
             {
-                return await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+                throw new HttpRequestException(response.ToString());
             }
-            throw new HttpRequestException();
         }
     }
 }

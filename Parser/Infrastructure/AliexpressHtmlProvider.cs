@@ -11,37 +11,38 @@ namespace Parser.Infrastructure
 
         private uint _maxRedirectionDeep;
 
-        private string _userAgent;
-        
-        public AliexpressHtmlProvider(IOptions<AliexpressHtmlProviderOptions> options)
+        private readonly HttpClientFactory _clientFactory;
+
+        public AliexpressHtmlProvider(HttpClientFactory clientFactory,
+            IOptions<AliexpressHtmlProviderOptions> options)
         {
-            var _options = options.Value;
-            _maxRedirectionDeep = _options.MaxRedirectionDeep;
-            _userAgent = _options.UserAgent;
-            Domain = _options.Domain;
+            _clientFactory = clientFactory;
+            _maxRedirectionDeep = options.Value.MaxRedirectionDeep;
+            Domain = options.Value.Domain;
         }
         
         public  async Task<string> GetPageHtmlAsync(string url)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            using (var response = await _clientFactory.CreateClient().GetAsync(url))
             {
-                return await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+
+                if ((int)response.StatusCode == 302)
+                {
+                    return await SolveRedirectionLoopAsync(url);
+                }
+
+                throw new HttpRequestException(response.ToString());
             }
 
-            if ((int)response.StatusCode == 302)
-            {
-                return await SolveRedirectionLoopAsync(url);
-            }
-
-            throw new HttpRequestException();
         }
 
         private async Task<string> SolveRedirectionLoopAsync(string url)
         {
-            HttpClient client = new HttpClient();
+            HttpClient client = _clientFactory.CreateClient();
             string newUrl = url;
             
             for (int i = 0; i < _maxRedirectionDeep; i++)
@@ -50,20 +51,25 @@ namespace Parser.Infrastructure
                 // при этом нужно создать новый клиент
                 if (i < 2)
                 {
-                    client = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false });
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd(_userAgent);
+                    client = _clientFactory.NoRedirectionClient();
                 }
 
-                var response = await client.GetAsync(newUrl);
-                if (response.Headers.Location == null)
+                using (var response = await client.GetAsync(newUrl))
                 {
-                    return await response.Content.ReadAsStringAsync();
-                }
+                    if (response.Headers.Location == null)
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return await response.Content.ReadAsStringAsync();
+                        }
 
-                newUrl = response.Headers.Location.ToString();
+                        throw new HttpRequestException(response.ToString());
+                    }
+                    newUrl = response.Headers.Location.ToString();
+                }
             }
 
-            throw new HttpRequestException();
+            throw new HttpRequestException("Can't connect to the page");
         }
     }
 }

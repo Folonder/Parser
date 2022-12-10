@@ -21,14 +21,16 @@ namespace Parser
         public void ConfigureServices(IServiceCollection services)
         {
             //  DefaultHtmlProvider must be the last 
+            // services.AddHttpClient<HttpClientFactory>();
             services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
             services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
 
-            // services.AddScoped<HttpClientFactory, HttpClientFactory>();
+            services.AddScoped<HttpClientFactory, HttpClientFactory>();
             services.AddScoped<IHtmlParserService, HtmlParserService>();
             
             services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));
             services.Configure<AliexpressHtmlProviderOptions>(Configuration.GetSection(AliexpressHtmlProviderOptions.Key));
+            services.Configure<HttpClientFactoryOptions>(Configuration.GetSection(HttpClientFactoryOptions.Key));
             
             services.AddControllers();
             services.AddSwaggerGen();
