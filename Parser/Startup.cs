@@ -27,10 +27,13 @@ namespace Parser
 
             services.AddScoped<HttpClientFactory, HttpClientFactory>();
             services.AddScoped<IHtmlParserService, HtmlParserService>();
-            
-            services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));
-            services.Configure<AliexpressHtmlProviderOptions>(Configuration.GetSection(AliexpressHtmlProviderOptions.Key));
-            services.Configure<HttpClientFactoryOptions>(Configuration.GetSection(HttpClientFactoryOptions.Key));
+
+            services.AddOptions<AliexpressHtmlProviderOptions>()
+                .Bind(Configuration.GetSection(AliexpressHtmlProviderOptions.Key)).ValidateDataAnnotations();
+            services.AddOptions<DefaultHtmlProviderOptions>()
+                .Bind(Configuration.GetSection(DefaultHtmlProviderOptions.Key)).ValidateDataAnnotations();
+            services.AddOptions<HttpClientFactoryOptions>()
+                .Bind(Configuration.GetSection(HttpClientFactoryOptions.Key)).ValidateDataAnnotations();
             
             services.AddControllers();
             services.AddSwaggerGen();
