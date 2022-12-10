@@ -1,17 +1,11 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Parser.Infrastructure;
 using Parser.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Parser
 {
@@ -23,16 +17,28 @@ namespace Parser
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataProvider, Requester>();
-            services.AddScoped<IParser, HTMLParser>();
-            services.AddControllers();
-        }
+            //  DefaultHtmlProvider must be the last 
+            // services.AddHttpClient<HttpClientFactory>();
+            services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
+            services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            services.AddScoped<HttpClientFactory, HttpClientFactory>();
+            services.AddScoped<IHtmlParserService, HtmlParserService>();
+
+            services.AddOptions<AliexpressHtmlProviderOptions>()
+                .Bind(Configuration.GetSection(AliexpressHtmlProviderOptions.Key)).ValidateDataAnnotations();
+            services.AddOptions<DefaultHtmlProviderOptions>()
+                .Bind(Configuration.GetSection(DefaultHtmlProviderOptions.Key)).ValidateDataAnnotations();
+            services.AddOptions<HttpClientFactoryOptions>()
+                .Bind(Configuration.GetSection(HttpClientFactoryOptions.Key)).ValidateDataAnnotations();
+            
+            services.AddControllers();
+            services.AddSwaggerGen();
+        }
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -50,6 +56,10 @@ namespace Parser
             {
                 endpoints.MapControllers();
             });
+            
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
         }
     }
 }
