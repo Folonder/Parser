@@ -4,6 +4,7 @@ using System.Data;
 using Parser.Infrastructure;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Parser.Exceptions;
 
 namespace Parser.Services
 {
@@ -20,16 +21,18 @@ namespace Parser.Services
         public async Task<string> GetSiteTitleAsync(string url)
         {
             var provider = await FindImplementation(url);
+
+            string title = await Task.Run(async () =>
+                            GetTitle(await provider.GetPageHtmlAsync(url)));
             
-            string title = await GetTitle(await provider.GetPageHtmlAsync(url));
             if (string.IsNullOrEmpty(title))
             {
-                throw new ArgumentException();
+                throw new ContentNotFoundException();
             }
             return title;
         }
 
-        private async Task<string> GetTitle(string html)
+        private string GetTitle(string html)
         {
             return Regex.Match(html, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
                 RegexOptions.IgnoreCase).Groups["Title"].Value;

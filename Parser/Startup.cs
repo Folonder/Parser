@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +23,8 @@ namespace Parser
             //  DefaultHtmlProvider must be the last 
             services.AddScoped<IHtmlProvider, AliexpressHtmlProvider>();
             services.AddScoped<IHtmlProvider, DefaultHtmlProvider>();
-            
+
+            // services.AddScoped<HttpClientFactory, HttpClientFactory>();
             services.AddScoped<IHtmlParserService, HtmlParserService>();
             
             services.Configure<DefaultHtmlProviderOptions>(Configuration.GetSection(DefaultHtmlProviderOptions.Key));

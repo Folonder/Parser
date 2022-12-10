@@ -3,12 +3,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Parser.Exceptions;
 using Parser.Services;
 
 namespace Parser.Controllers
 {
     [Route("api/[controller]")]
-    public class HtmlParserController: ControllerBase
+    public class HtmlParserController : ControllerBase
     {
         private readonly ILogger<HtmlParserController> _logger;
 
@@ -33,10 +34,10 @@ namespace Parser.Controllers
             }
             catch (HttpRequestException ex)
             {  
-                _logger.LogInformation("Can't connect to the server");
+                _logger.LogInformation($"Can't connect to the server. Exceptions message: {ex.Message}");
                 return NotFound(ex.Message);
             }
-            catch (ArgumentException ex)
+            catch (ContentNotFoundException ex)
             {
                 _logger.LogInformation("No title on the page");
                 return NoContent();
